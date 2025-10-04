@@ -42,4 +42,6 @@ public interface DishMapper {
     //根据id动态填充
     @AutoFill(value = OperationType.UPDATE)
     void update(Dish dish);
+
+    List<Dish> list(Dish dish);
 }

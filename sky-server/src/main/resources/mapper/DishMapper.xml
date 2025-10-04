@@ -33,6 +33,16 @@
         </where>
         order by d.create_time desc
     </select>
+    <!-- DishMapper.xml -->
+    <select id="list" parameterType="com.sky.entity.Dish" resultType="com.sky.entity.Dish">
+        SELECT * FROM dish
+        <where>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY update_time DESC
+    </select>
 
     <update id="update">
         update dish
