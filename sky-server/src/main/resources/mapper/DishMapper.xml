@@ -15,6 +15,7 @@
             #{id}
         </foreach>
     </delete>
+
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select d.*, c.name as categoryName
         from dish d
@@ -32,6 +33,7 @@
         </where>
         order by d.create_time desc
     </select>
+
     <update id="update">
         update dish
         <set>
