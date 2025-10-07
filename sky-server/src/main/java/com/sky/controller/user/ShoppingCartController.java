@@ -56,7 +56,7 @@ public class ShoppingCartController {
 
     @PostMapping("/sub")
     @ApiOperation("删除购物车中一个商品")
-    public Result  deleteShopping(ShoppingCartDTO shoppingCartDTO){
+    public Result  deleteShopping(@RequestBody ShoppingCartDTO shoppingCartDTO){
         shoppingCartService.deleteShopping(shoppingCartDTO);
         return Result.success();
     }
