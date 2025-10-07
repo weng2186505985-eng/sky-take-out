@@ -40,6 +40,9 @@
             <if test="categoryId != null">
                 AND category_id = #{categoryId}
             </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
         </where>
         ORDER BY update_time DESC
     </select>

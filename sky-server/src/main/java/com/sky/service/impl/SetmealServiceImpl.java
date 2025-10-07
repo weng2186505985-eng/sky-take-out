@@ -41,18 +41,19 @@ public class SetmealServiceImpl implements SetmealService {
     public void saveWithDish(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
-        //像套餐表中加入一条数据
+        // 向套餐表中插入一条数据
         setmealMapper.insert(setmeal);
-        long setmealId = setmeal.getId();
-        List<SetmealDish> Dishes = setmealDTO.getSetmealDishes();
-        if (Dishes != null  && Dishes.size() > 0) {
-           Dishes.forEach(setmealDish -> {
-               setmealDish.setSetmealId(setmealId);
-           });
-        }
-        setmealDishMapper.insertBatch(Dishes);
-    }
 
+        long setmealId = setmeal.getId();
+        // 修正：变量名改为小写开头的 setmealDishes
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        if (setmealDishes != null && setmealDishes.size() > 0) {
+            setmealDishes.forEach(setmealDish -> {
+                setmealDish.setSetmealId(setmealId);
+            });
+            setmealDishMapper.insertBatch(setmealDishes);
+        }
+    }
 
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(),setmealPageQueryDTO.getPageSize());
@@ -73,18 +74,22 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDishMapper.deleteBySetmealIds(ids);
     }
 
+    @Transactional
     public void updateWithDish(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
         setmealMapper.update(setmeal);
+
         setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
-        List<SetmealDish>   setmealDishes = setmealDTO.getSetmealDishes();
+
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         if (setmealDishes != null && setmealDishes.size() > 0) {
             setmealDishes.forEach(setmealDish -> {
                 setmealDish.setSetmealId(setmealDTO.getId());
             });
+            // 修正：传入正确的变量 setmealDishes，而不是 dishes
+            setmealDishMapper.insertBatch(setmealDishes);
         }
-        setmealDishMapper.insertBatch(setmealDishes);
     }
 
     public SetmealVO getByIdWithDish(Long id) {
@@ -103,5 +108,13 @@ public class SetmealServiceImpl implements SetmealService {
 
     public List<DishItemVO> getDishItemById(Long id) {
         return setmealMapper.getDishItemBySetmealId(id);
+    }
+
+    public void startOrStop(Integer status, Long id) {
+        Setmeal setmeal=Setmeal.builder()
+                .id(id)
+                .status(status)
+                .build();
+        setmealMapper.update(setmeal);
     }
 }
