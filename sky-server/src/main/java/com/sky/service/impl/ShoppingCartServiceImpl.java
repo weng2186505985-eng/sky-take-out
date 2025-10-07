@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
+
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -58,18 +58,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 shoppingCart.setCreateTime(LocalDateTime.now());
             }else{
                 //本次添加的是套餐
-                Setmeal setmeal = setmealMapper.getById(userId);
+                Setmeal setmeal = setmealMapper.getById(shoppingCartDTO.getSetmealId());
                 shoppingCart.setName(setmeal.getName());
                 shoppingCart.setImage(setmeal.getImage());
                 shoppingCart.setAmount(setmeal.getPrice());
                 shoppingCart.setNumber(1);
                 shoppingCart.setCreateTime(LocalDateTime.now());
             }
+            shoppingCartMapper.insert(shoppingCart);
 
 
 
         }
-        shoppingCartMapper.insert(shoppingCart);
 
 
     }
@@ -96,4 +96,36 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     Long userId=BaseContext.getCurrentId();
     shoppingCartMapper.deleteByUserId(userId);
     }
-}
+
+    /**
+     * 清空购物车
+     * @param shoppingCartDTO
+     */
+    public void deleteShopping(ShoppingCartDTO shoppingCartDTO) {
+        Long userId = BaseContext.getCurrentId();
+
+        // 构建查询条件
+        ShoppingCart queryCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, queryCart);
+        queryCart.setUserId(userId);
+
+        // 查询购物车记录
+        List<ShoppingCart> cartList = shoppingCartMapper.list(queryCart);
+
+        if(cartList != null && !cartList.isEmpty()) {
+            ShoppingCart cart = cartList.get(0);
+            int currentNumber = cart.getNumber();
+
+            if(currentNumber > 1) {
+                // 数量大于1，减少数量
+                cart.setNumber(currentNumber - 1);
+                shoppingCartMapper.updateNumberById(cart);
+            } else {
+                // 数量为1，减少到0，删除记录
+                shoppingCartMapper.deleteById(cart.getId());
+            }
+        }
+        // 如果没有找到记录，可以选择记录日志或忽略
+    }
+    }
+
