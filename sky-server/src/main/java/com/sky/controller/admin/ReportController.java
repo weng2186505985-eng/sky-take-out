@@ -29,7 +29,6 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
     return Result.success(reportService.getTurnoverStatistics(begin,end));
-        return null;
 
     }
 }
