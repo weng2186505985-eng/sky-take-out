@@ -51,7 +51,7 @@ public class OrderController {
         log.info("模拟支付完成：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
     }
-    @GetMapping("/histroyOrders")
+    @GetMapping("/historyOrders")
     @ApiOperation("历史订单查询")
     public Result<PageResult> page(int page,int pageSize,Integer status ) {
         PageResult pageResult=orderService.pageQueryUser(page,pageSize,status);
